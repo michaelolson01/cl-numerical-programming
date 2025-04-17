@@ -110,6 +110,7 @@
       (recurse 0))))
 
 ;; Testing to make sure my-array works as expected, and the dimensions come back as expected.
+;; This should be put into test.. after I learn how to use rove.
 (defvar 1d-array (my-array '(1 1 1)))
 (defvar 2d-array (my-array '((1 1 1)
                              (2 2 2)
