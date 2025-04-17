@@ -1,5 +1,7 @@
 (in-package cl-numeric-programming)
 
+(defparameter π pi)
+
 (defun random-exclusive-0 (upper-limit)
   "This is like a (random upper-limit) but is exclusive for 0.0."
   ;; optimize for single-float
@@ -23,7 +25,7 @@ default μ is 0.0 default σ is 1.0 (Standard Normal Distibution)"
   (check-type σ single-float)
   (let* ((u1 (get-random-exclusive-0 1.0))
          (u2 (random 1.0))
-         (θ (* pi 2 u2))
+         (θ (* π 2 u2))
          (magnitude (* σ (sqrt (* -2.0 (log u1)))))
          (z0 (+ (* magnitude (cos θ)) μ)))
     ;; We only need one of these, and I can't find if
