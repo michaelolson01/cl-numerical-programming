@@ -60,13 +60,13 @@ default μ is 0.0 default σ is 1.0 (Standard Normal Distibution)"
           (return (* d v)))))))
 
 ;; Example usage:
-(defun test-beta-distribution (alpha beta n)
+(defun test-beta-distribution (α β n)
   "Generate n samples from Beta(alpha, beta) and print statistics."
-  (let ((samples (loop repeat n collect (beta-distribution-sample alpha beta))))
-    (format t "Beta(~A, ~A) distribution statistics:~%" alpha beta)
+  (let ((samples (loop repeat n collect (beta-distribution-sample α β))))
+    (format t "Beta(~A, ~A) distribution statistics:~%" α β)
     (format t "Mean: ~A (Expected: ~A)~%"
             (/ (reduce #'+ samples) n)
-            (/ alpha (+ alpha beta)))
+            (/ α (+ α β)))
     (format t "Min: ~A~%" (reduce #'min samples))
     (format t "Max: ~A~%" (reduce #'max samples))
     samples))
