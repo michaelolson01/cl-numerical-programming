@@ -32,3 +32,16 @@ default μ is 0.0 default σ is 1.0 (Standard Normal Distibution)"
     ;; lisp has implemented a function to get both at the same time (soft FSINCOS)
     ;; (z1 (+ (* magnitude (sin θ)) μ1)))
     z0))
+
+;; Now make this recursive, and easier to read.
+(defun arrays-of-distibutions (layers-dimensions-list function)
+  "returns a list of lists with the contents being the defined function
+The layers-dimensions-list is a list of numbers that represents layers, and the dimensions in the layer."
+  (let ((num-layers (length layers-dimensions-list))
+        (final-array nil))
+    (dotimes (cur-layer num-layers)
+      (push (let ((cur-list nil))
+              (dotimes (cur-dimension (nth cur-layer layers-dimensions-list))
+                (push (funcall function) cur-list))
+              cur-list) final-array))
+    (reverse final-array)))
