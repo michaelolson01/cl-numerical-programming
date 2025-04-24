@@ -34,14 +34,14 @@ default μ is 0.0 default σ is 1.0 (Standard Normal Distibution)"
     z0))
 
 ;; Now make this recursive, and easier to read.
-(defun arrays-of-distibutions (layers-dimensions-list function)
+(defun lists-of-distibutions (layers-dimensions-list function)
   "returns a list of lists with the contents being the defined function
 The layers-dimensions-list is a list of numbers that represents layers, and the dimensions in the layer."
   (let ((num-layers (length layers-dimensions-list))
-        (final-array nil))
+        (final-list nil))
     (dotimes (cur-layer num-layers)
       (push (let ((cur-list nil))
               (dotimes (cur-dimension (nth cur-layer layers-dimensions-list))
                 (push (funcall function) cur-list))
-              cur-list) final-array))
-    (reverse final-array)))
+              cur-list) final-list))
+    (reverse final-list)))
