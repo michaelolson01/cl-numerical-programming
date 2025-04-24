@@ -1,3 +1,4 @@
+*.py
 *.abcl
 *.fasl
 *.dx32fsl
