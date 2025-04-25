@@ -33,15 +33,34 @@ default μ is 0.0 default σ is 1.0 (Standard Normal Distibution)"
     ;; (z1 (+ (* magnitude (sin θ)) μ1)))
     z0))
 
-;; Now make this recursive, and easier to read.
-(defun lists-of-distibutions (layers-dimensions-list function)
-  "returns a list of lists with the contents being the defined function
-The layers-dimensions-list is a list of numbers that represents layers, and the dimensions in the layer."
-  (let ((num-layers (length layers-dimensions-list))
-        (final-list nil))
-    (dotimes (cur-layer num-layers)
-      (push (let ((cur-list nil))
-              (dotimes (cur-dimension (nth cur-layer layers-dimensions-list))
-                (push (funcall function) cur-list))
-              cur-list) final-list))
-    (reverse final-list)))
+(defun create-sample-list (x function &optional accumulator)
+  "creates a list of length x specified by the function"
+  (if (= x 0)
+      accumulator
+      (create-distribution-sample-list (- x 1)
+                                       (cons (funcall function) accumulator))))
+
+(defun create-sample-matrix (x y function &optional accumulator)
+  "creates a matrix of size x y specified by the function"
+  (if (= x 0)
+      accumulator
+      (create-distribution-sample-matrix (- x 1)
+                                         y
+                                         (cons (create-sample-list y function) accumulator))))
+
+(defun initialize-weights (layers &optional accumulator)
+  (if (= 1 (length layers))
+      (reverse accumulator)
+      (initialize-weights-rec (cdr layers)
+                              (cons (create-sample-matrix (second layers)
+                                                          (first layers)
+                                                          #'generate-gaussian-sample)
+                                    accumulator))))
+
+(defun initialize-biases (layers &optional accumulator)
+  (if (= 1 (length layers))
+      (reverse accumulator)
+      (initialize-weights-rec (cdr layers)
+                              (cons (create-sample-list (second layers)
+                                                        (lambda () 0.0))
+                                    accumulator))))
