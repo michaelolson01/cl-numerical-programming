@@ -1,7 +1,5 @@
 (in-package cl-numerical-programming)
 
-(defparameter π pi)
-
 (defun random-exclusive-0 (upper-limit)
   "This is like a (random upper-limit) but is exclusive for 0.0."
   ;; optimize for single-float
@@ -37,30 +35,14 @@ default μ is 0.0 default σ is 1.0 (Standard Normal Distibution)"
   "creates a list of length x specified by the function"
   (if (= x 0)
       accumulator
-      (create-distribution-sample-list (- x 1)
-                                       (cons (funcall function) accumulator))))
+      (create-sample-list (- x 1) function
+                          (cons (funcall function) accumulator))))
 
 (defun create-sample-matrix (x y function &optional accumulator)
   "creates a matrix of size x y specified by the function"
   (if (= x 0)
       accumulator
-      (create-distribution-sample-matrix (- x 1)
-                                         y
-                                         (cons (create-sample-list y function) accumulator))))
-
-(defun initialize-weights (layers &optional accumulator)
-  (if (= 1 (length layers))
-      (reverse accumulator)
-      (initialize-weights-rec (cdr layers)
-                              (cons (create-sample-matrix (second layers)
-                                                          (first layers)
-                                                          #'generate-gaussian-sample)
-                                    accumulator))))
-
-(defun initialize-biases (layers &optional accumulator)
-  (if (= 1 (length layers))
-      (reverse accumulator)
-      (initialize-weights-rec (cdr layers)
-                              (cons (create-sample-list (second layers)
-                                                        (lambda () 0.0))
-                                    accumulator))))
+      (create-sample-matrix (- x 1)
+                            y
+                            function
+                            (cons (create-sample-list y function) accumulator))))
