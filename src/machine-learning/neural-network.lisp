@@ -46,7 +46,7 @@
 
 (defun apply-activation-function (function vector &optional accumulator)
   "Apply the activation function to a vector"
-  (if (null vector)
+  (if (not vector)
       (reverse accumulator)
       (apply-activation-function function
                                  (cdr vector)
@@ -69,17 +69,14 @@ for instance (3 3 2) has 3 nodes in the first (input), 3 in the first hidden and
 ;;
 ;; activation functions never seem to change, so it is simplified to use one function.
 ;; so, recursively -
-(defun forward-propogation (inputs activation-function weights &optional (accumulator null) (caches null))
-  (if (null weights) ;; if we are done
-      accumulator
-      (if (null accumulator) ;; we haven't started yet
-          (hw inputs
-              activation-function
-              (cdr weights)
-              (apply-activation-function activation-function (dot (first weights) inputs)))
-          (hw inputs
-              activation-function
-              (cdr weights)
-              (apply-activation-function activation-function (dot (first weights) accumulator))))))
-;; now, obviously, this cannot change, there is no way to train this model at the moment.
-
+(defun forward-propagation (inputs activation-function weights biases &optional (caches nil))
+  (if (not weights) ;; if we are done
+      (values inputs caches)
+      (let ((linear-hypothesis (vector-vector-addition (matrix-vector-multiplication (first weights)
+                                                                                     inputs)
+                                                       (first biases))))
+        (forward-propogation (apply-activation-function activation-function linear-hypothesis)
+                             activation-function
+                             (cdr weights)
+                             (cdr biases)
+                             (cons (list (list inputs (first weights) (first biases)) linear-hypothesis) caches)))))

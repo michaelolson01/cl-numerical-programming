@@ -21,6 +21,9 @@
   "multiply a vector to a vector"
   (apply #'+ (apply #'mapcar #'* (list vector1 vector2))))
 
+(defun vector-vector-addition (vector1 vector2)
+  (mapcar #'+ vector1 vector2))
+
 (defun matrix-vector-multiplication (matrix vector &optional accumulator)
   "Multiply a matrix by a vector"
   (if (and (not accumulator)
