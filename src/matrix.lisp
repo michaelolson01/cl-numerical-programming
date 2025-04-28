@@ -22,6 +22,29 @@
          (setf (aref new-matrix column row) (aref matrix row column))
          (matrix-transpose-array matrix (+ row 1) 0 new-matrix))))
 
+;; There are multiple ways to multiply something against a matrix:
+;; Matrix-A * Matrix-B - Matrix Multiplication
+;; Matrix * Vector
+;; Vector * Matrix
+;; Vector * Vector - special case of dot product.
+;; Scalar * Matrix - Matrix Scalar Multiplication
+
+;; for vectors
+(defun scalar-vector-multiplication-vector (scalar vector)
+  "multiply a vector by a scalar"
+  (let ((new-vector (make-array (length vector))))
+    (dotimes (pos (length vector))
+      (setf (aref new-vector pos) (* scalar (aref vector pos))))
+    new-vector))
+
+;; Needs to be more optimized, but this is what I have now.
+(defun scalar-matrix-multiplication-vector (scalar matrix)
+  "multiply a matrix by a scalar"
+  (let ((new-matrix (make-array (list (array-dimension matrix 0) (array-dimension matrix 1)))))
+    (dotimes (pos-x (array-dimension matrix 0))
+      (dotimes (pos-y (array-dimension matrix 1))
+        (setf (aref new-matrix pos-x pos-y) (* scalar (aref matrix pos-x pos-y)))))
+    new-matrix))
 
 (defun matrix-multiply (matrix1 matrix2 &optional (row1 0) (column1 0) (column2 0) (new-matrix nil))
   "Multiplies two matrices: only accepts arrays of 'single-float"
@@ -42,11 +65,11 @@
               (= column2 (- (array-dimension matrix2 1) 1)))
          new-matrix)
         ((< column1 (- (array-dimension matrix1 1) 1))
-         (matrix-multiply-array matrix1 matrix2 row1 (+ column1 1) column2 new-matrix))
+         (matrix-multiply matrix1 matrix2 row1 (+ column1 1) column2 new-matrix))
         ((< column2 (- (array-dimension matrix2 1) 1))
-         (matrix-multiply-array matrix1 matrix2 row1 0 (+ column2 1) new-matrix))
+         (matrix-multiply matrix1 matrix2 row1 0 (+ column2 1) new-matrix))
         (t ;; (< row (- (array-dimension matrix 0) 1))
-         (matrix-multiply-array matrix1 matrix2 (+ row1 1) 0 0 new-matrix))))
+         (matrix-multiply matrix1 matrix2 (+ row1 1) 0 0 new-matrix))))
 
 (defun dot-product (array1 array2 &optional (sizes-good nil) (running-total 0.0) (position 0))
   "Compute a dot product of two single dimensional arrays of single-floats."
