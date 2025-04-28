@@ -10,21 +10,16 @@
 ;; They will be slower, but somewhat easier to use.
 
 (defun scalar-vector-multiplication (scalar vector)
+  "multiply a scalar to a vector"
   (mapcar (lambda (idx) (* scalar idx)) vector))
 
 (defun scalar-matrix-multiplication (scalar matrix)
+  "mulitply a scalar to a matrix"
   (mapcar (lambda (row) (scalar-vector-multiplication scalar row)) matrix))
 
-(defun dot (vector1 vector2 &optional (accumulator 0))
-  "Also known as the dot product of two vectors."
-  (if (and (not accumulator)
-           (not (= (length vector1) (length vector2))))
-      (error "Expects matrix columns to equal vector length")
-      (if (not vector1)
-          accumulator
-          (vector-vector-multiplication (cdr vector1)
-                                        (cdr vector2)
-                                        (+ (* (first vector1) (first vector2)) accumulator)))))
+(defun dot (vector1 vector2)
+  "multiply a vector to a vector"
+  (apply #'+ (apply #'mapcar #'* (list vector1 vector2))))
 
 (defun matrix-vector-multiplication (matrix vector &optional accumulator)
   "Multiply a matrix by a vector"
@@ -41,7 +36,9 @@
 ;;  ( 4 5 6 )   -->  ( 2 5 8 )
 ;;  ( 7 8 9 ))       ( 3 6 9 ))
 (defun transpose-matrix-list (matrix)
-  (apply #'mapcar #'list matrix))
+  (if (not matrix)
+      nil
+      (apply #'mapcar #'list matrix)))
 
 ;; I won't need this right now, but the matrix has to be transposed to use this algorithm,
 ;; otherwords, I would have to get the first column of the matrix, and multiply it by the vector
@@ -68,5 +65,3 @@
                                 (cdr matrix2t)
                                 (cons (dot (first matrix1) (first matrix2t)) accumulator)))))
 
-(defun rotate (list-of-lists)
-  (apply #'mapcar #'list list-of-lists))
