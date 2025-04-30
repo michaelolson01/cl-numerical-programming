@@ -17,8 +17,25 @@
   "mulitply a scalar to a matrix"
   (mapcar (lambda (row) (scalar-vector-multiplication scalar row)) matrix))
 
+(defun scalar-vector-addition (scalar vector)
+  "multiply a scalar to a vector"
+  (mapcar (lambda (idx) (+ scalar idx)) vector))
+
+(defun scalar-matrix-addition (scalar matrix)
+  "mulitply a scalar to a matrix"
+  (mapcar (lambda (row) (scalar-vector-multiplication scalar row)) matrix))
+
+;; I need to improve this.
+;;
+;;  (dot (x1 x2 x3) (y1 y2 y3)) - automatically convert the second to a column and calculate it.
+;;  (dot (x1 x2 x3) ((y1) (y2) (y3)) -- already put in a column, just calculate it.
+;;
 (defun dot (vector1 vector2)
   "multiply a vector to a vector"
+  ;; first check to make sure they are the correct dimensions
+;;  (let ((vector2-a (if (numberp (first vector2) 1)
+;;                       (mapcar #'list vector2)
+;;                       vector2)))
   (apply #'+ (apply #'mapcar #'* (list vector1 vector2))))
 
 (defun vector-vector-addition (vector1 vector2)
@@ -56,15 +73,51 @@
                                         (cdr matrix)
                                         (cons (dot (first matrix) vector) accumulator)))))
 
-(defun matrix-matrix-multiply (matrix1 matrix2 &optional matrix2t accumulator)
-  "Multiply two matrices together"
+;; should return a column if the second is just a column.
+;; maybe it is because I attempted to simplify by using a transposed matrix, and the vector dot product
+;; which i have the wrong algorithm for...
+(defun matrix-dot (matrix1 matrix2 &optional matrix2t accumulator)
+  "Multiply two matrices together, matrix dot product or inner product"
   (if (not matrix1)
-      (reverse accumulator)
+      (mapcar #'list (reverse accumulator))
       (progn
         (if (not matrix2t)
             (setf matrix2t (transpose-matrix-list matrix2)))
-        (matrix-matrix-multiply (cdr matrix1)
-                                matrix2
-                                (cdr matrix2t)
-                                (cons (dot (first matrix1) (first matrix2t)) accumulator)))))
+        (matrix-dot (cdr matrix1)
+                    matrix2
+                    (cdr matrix2t)
+                    (cons (dot (first matrix1) (first matrix2t)) accumulator)))))
 
+(defun vector-combine (function vector1 vector2 &optional accumulator)
+  "Adds two vectors together"
+  (if (not vector1)
+      (reverse accumulator)
+      (vector-combine function
+                      (cdr vector1)
+                      (cdr vector2)
+                      (cons (funcall function (first vector1) (first vector2)) accumulator))))
+
+(defun matrix-combine (function matrix1 matrix2 &optional accumulator)
+  "Add two matrices together."
+  (if (not matrix1)
+      (reverse accumulator)
+      (matrix-combine function
+                      (cdr matrix1)
+                      (cdr matrix2)
+                      (cons (vector-combine function (first matrix1) (first matrix2)) accumulator))))
+
+(defun vector-apply (function vector1 &optional accumulator)
+  "Adds two vectors together"
+  (if (not vector1)
+      (reverse accumulator)
+      (vector-apply function
+                    (cdr vector1)
+                    (cons (funcall function (first vector1)) accumulator))))
+
+(defun matrix-apply (function matrix1 &optional accumulator)
+  "Add two matrices together."
+  (if (not matrix1)
+      (reverse accumulator)
+      (matrix-combine function
+                      (cdr matrix1)
+                      (cons (vector-apply function (first matrix1)) accumulator))))
