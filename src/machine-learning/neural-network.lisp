@@ -5,10 +5,10 @@
   (if (= 1 (length layers))
       (reverse accumulator)
       (initialize-weights (cdr layers)
-                              (cons (create-sample-matrix (second layers)
-                                                          (first layers)
-                                                          #'generate-gaussian-sample)
-                                    accumulator))))
+                          (cons (create-sample-matrix (second layers)
+                                                      (first layers)
+                                                      #'generate-gaussian-sample)
+                                accumulator))))
 
 ;; Have not gotten this far in the book yet.
 (defun initialize-biases (layers &optional accumulator)
@@ -19,6 +19,7 @@
                                                         (lambda () 0.0))
                                     accumulator))))
 
+;; activation functions
 (defun sigmoid (x)
   (/ 1 (+ 1 (exp (- x)))))
 
@@ -44,22 +45,9 @@
   "This is taken from the Geeks for Geeks website."
   (- (/ 2 (+ 1 (exp (* -2 x)))) 1))
 
-(defun apply-activation-function (function vector &optional accumulator)
-  "Apply the activation function to a vector"
-  (if (not vector)
-      (reverse accumulator)
-      (apply-activation-function function
-                                 (cdr vector)
-                                 (cons (funcall function (first vector)) accumulator))))
-
-(defun simple-feedforward-network (layers-input)
-  "runs a simple feedforward network.
-argument layers is a list of layers, and the nodes in the layer
-for instance (3 3 2) has 3 nodes in the first (input), 3 in the first hidden and
-2 in the second hidden. the output is always 1 node, and does not need to be added."
-  (let* ((layers (append layers-input '(1)))
-         (weights (initialize-weights layers)))
-    weights))
+(defun apply-activation-function (function matrix)
+  "Applies the activation function to every element of a matrix."
+  (mapcar (lambda (input) (mapcar function input)) matrix))
 
 ;; for a two layer fully connected network
 ;; (hw x) = (g2 (dot W2 (g1 (dot W1 x))))
@@ -69,14 +57,54 @@ for instance (3 3 2) has 3 nodes in the first (input), 3 in the first hidden and
 ;;
 ;; activation functions never seem to change, so it is simplified to use one function.
 ;; so, recursively -
-(defun forward-propagation (inputs activation-function weights biases &optional (caches nil))
+(defun forward-propagation (inputs activation-function weights &optional (caches nil))
   (if (not weights) ;; if we are done
       (values inputs caches)
-      (let ((linear-hypothesis (vector-vector-addition (matrix-vector-multiplication (first weights)
-                                                                                     inputs)
-                                                       (first biases))))
-        (forward-propogation (apply-activation-function activation-function linear-hypothesis)
+      (let ((linear-hypothesis (matrix-vector-multiplication (first weights)
+                                                             inputs)))
+        (forward-propogation (mapcar activation-function linear-hypothesis)
                              activation-function
                              (cdr weights)
-                             (cdr biases)
-                             (cons (list (list inputs (first weights) (first biases)) linear-hypothesis) caches)))))
+                             (cons (list (list inputs (first weights)) linear-hypothesis) caches)))))
+
+;; Neural network
+(let ((input-nodes 3)
+      (hidden-nodes 3)
+      (output-nodes 3)
+      (activation-function #'sigmoid)
+
+      (learning-rate 0.3)
+      (weights-input-hidden (create-sample-matrix 3 3 #'generate-gaussian-sample))
+      (weights-hidden-output (create-sample-matrix 3 3 #'generate-gaussian-sample)))
+
+  (defun query-nn (inputs)
+    (apply-activation-function activation-function
+                               (matrix-dot weights-hidden-output
+                                           (apply-activation-function activation-function
+                                                                      (matrix-dot weights-input-hidden
+                                                                                  inputs)))))
+
+  (defun update-weights (weights errors outputs inputs)
+    (matrix-combine #'+
+                    weights
+                    (matrix-apply (lambda (input) (* learning-rate input))
+                                  (matrix-dot (matrix-combine #'*
+                                                              (matrix-combine #'*
+                                                                              errors
+                                                                              outputs)
+                                                              (matrix-apply (lambda (input) (+ 1 input))
+                                                                            (matrix-apply (lambda (input) (* -1 input))
+                                                                                          outputs)))
+                                              (transpose-matrix-list inputs)))))
+
+  (defun train-nn (inputs-list targets-list)
+    (let* ((inputs (transpose-matrix-list (list inputs-list))) ;;
+           (targets (transpose-matrix-list (list targets-list)))
+           (hidden-inputs (matrix-dot weights-input-hidden inputs))
+           (hidden-outputs (apply-activation-function activation-function hidden-inputs)) ;;
+           (final-inputs (matrix-dot weights-hidden-output hidden-outputs))
+           (final-outputs (apply-activation-function activation-function final-inputs)) ;;
+           (output-errors (matrix-apply #'+ targets (scalar-matrix-multiplication -1 final-outputs))) ;;
+           (hidden-errors (matrix-dot (transpose-matrix-list weights-hidden-output) output-errors))) ;;
+      (setf weights-hidden-output (update-weights weights-hidden-output output-errors final-outputs hidden-outputs))
+      (setf weights-input-hidden (update-weights weights-input-hidden hidden-errors hidden-outputs inputs)))))
