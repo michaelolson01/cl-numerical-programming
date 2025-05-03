@@ -1,6 +1,9 @@
+;;;; Implement a neural network in lisp
+;;;; This uses lists, so could be optimized with vectors in the future.
+
 (in-package :cl-numerical-programming)
 
-;; To initialize the weights to random numbers.
+;;; To initialize the weights to random numbers.
 (defun initialize-weights (layers &optional accumulator)
   (if (= 1 (length layers))
       (reverse accumulator)
@@ -10,7 +13,7 @@
                                                       #'generate-gaussian-sample)
                                 accumulator))))
 
-;; Have not gotten this far in the book yet.
+;;; Have not gotten this far in the book yet.
 (defun initialize-biases (layers &optional accumulator)
   (if (= 1 (length layers))
       (reverse accumulator)
@@ -19,23 +22,22 @@
                                                         (lambda () 0.0))
                                     accumulator))))
 
-;; helper functions
-;; only because it is faster to do complex calculations once, and then multiply the answers together.
+;;; helper functions
+;;; only because it is faster to do complex calculations once, and then multiply the answers together.
 (defun ^2 (x)
   (* x x))
 
 (defun ^3 (x)
   (* x x x))
 
-
-;; for a two layer fully connected network
-;; (hw x) = (g2 (dot W2 (g1 (dot W1 x))))
-;; whereas g1 and g2 are the activation functions for the first and second layers.
-;; W1 and W2 are the weight matrices of the first and second layers
-;; x is the inputs layer.
-;;
-;; activation functions never seem to change, so it is simplified to use one function.
-;; so, recursively -
+;;; for a two layer fully connected network
+;;; (hw x) = (g2 (dot W2 (g1 (dot W1 x))))
+;;; whereas g1 and g2 are the activation functions for the first and second layers.
+;;; W1 and W2 are the weight matrices of the first and second layers
+;;; x is the inputs layer.
+;;;
+;;; activation functions never seem to change, so it is simplified to use one function.
+;;; so, recursively -
 (defun forward-propagation (inputs activation-function weights &optional (caches nil))
   (if (not weights) ;; if we are done
       (values inputs caches)

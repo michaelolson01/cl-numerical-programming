@@ -1,17 +1,21 @@
 (in-package :cl-numerical-programming)
 
-;; activation functions
+;;; activation functions
+
 (defun unit-step (x)
+  "Used in the perceptatron"
   (cond ((< x 0) 0)
         ((= x 0) 0.5)
         (t 1))) ;; (> x 0)
 
 (defun signum (x)
+  "unit-step centered around 0"
   (cond ((< x 0) -1)
         ((= x 0) 0)
         (t 1))) ;; (> x 0)
 
 (defun linear (x)
+  "Yes, it's linear. (= x x)."
   x)
 
 (defun piece-wise-linear (x)
@@ -94,4 +98,5 @@
 
 (defun apply-activation-function (function matrix)
   "Applies the activation function to every element of a matrix."
+  ;; This should use an apply function from matrices.
   (mapcar (lambda (input) (mapcar function input)) matrix))

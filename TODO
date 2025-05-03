@@ -14,7 +14,7 @@ This is basically python written in lisp, make it more lispy.
 Both forward-propogation and query-nn do the same thing. Combine theseand simplify
 *** TODO Update weights
 Convert this to a recursive function, and simplify.
-There should only be one list for the sizes of the layers, not a separate variable per layer
+There should only be one list for the sizes of the layers, not a separate variablew per layer
 *** TODO Refactor train-nn
 The train function is really just a python list variables, set variables, and then update weights
 This could be done better in lisp.
