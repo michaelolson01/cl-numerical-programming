@@ -1,3 +1,5 @@
+;;;; Functions to create and use distributions of random numbers
+
 (in-package cl-numerical-programming)
 
 (defun random-exclusive-0 (upper-limit)
