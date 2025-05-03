@@ -10,11 +10,11 @@ Activation Functions should be in separate file, since they will be used for
 more than just a neural network.
 ** TODO Reformat Tariq Rashid's Code
 This is basically python written in lisp, make it more lispy.
-*** TODO Combine forward-propagations
+*** DONE Combine forward-propagations
 Both forward-propogation and query-nn do the same thing. Combine theseand simplify
 *** TODO Update weights
 Convert this to a recursive function, and simplify.
-There should only be one list for the sizes of the layers, not a separate variablew per layer
+There should only be one list for the sizes of the layers, not a separate variable per layer
 *** TODO Refactor train-nn
 The train function is really just a python list variables, set variables, and then update weights
 This could be done better in lisp.
@@ -27,7 +27,7 @@ This could be done better in lisp.
 | [[file:TODO::*Flesh out README][Flesh out README]]             |             |         |                               |
 |                              |             |         | [[file:TODO::*Separate Activation Functions][Separate Activation Functions]] |
 | [[file:TODO::*Reformat Tariq Rashid's Code][Reformat Tariq Rashid's Code]] |             |         |                               |
-| [[file:TODO::*Combine forward-propagations][Combine forward-propagations]] |             |         |                               |
+|                              |             |         | [[file:TODO::*Combine forward-propagations][Combine forward-propagations]]  |
 | [[file:TODO::*Update weights][Update weights]]               |             |         |                               |
 | [[file:TODO::*Refactor train-nn][Refactor train-nn]]            |             |         |                               |
 #+END:

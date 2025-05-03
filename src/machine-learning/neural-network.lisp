@@ -30,35 +30,37 @@
 (defun ^3 (x)
   (* x x x))
 
-;;; for a two layer fully connected network
-;;; (hw x) = (g2 (dot W2 (g1 (dot W1 x))))
-;;; whereas g1 and g2 are the activation functions for the first and second layers.
-;;; W1 and W2 are the weight matrices of the first and second layers
-;;; x is the inputs layer.
-;;;
-;;; activation functions never seem to change, so it is simplified to use one function.
-;;; so, recursively -
-(defun forward-propagation (inputs activation-function weights &optional (caches nil))
-  (if (not weights) ;; if we are done
-      (values inputs caches)
-      (let ((linear-hypothesis (matrix-vector-multiplication (first weights)
-                                                             inputs)))
-        (forward-propogation (mapcar activation-function linear-hypothesis)
+(defun forward-propagation (inputs activation-function weights)
+  "Propagate forward in the neural network"
+  ;; Interestingly enough, the number of nodes between layers is inferred by the
+  ;; current matrix of weights.
+  ;; inputs | next layer
+  ;;      1 |          5
+  ;;      2 |          6
+  ;;      3 |          7
+  ;; weights will be 3 for each node on the next layer, so no need to pass the next layer.
+  ;; input updates at end of the processing.
+  (if (not weights)
+      ;; No weights means we are done processing this pass.
+      inputs
+      (let ((linear-hypothesis (matrix-dot (first weights)
+                                           inputs)))
+        (forward-propagation (apply-activation-function activation-function linear-hypothesis)
                              activation-function
-                             (cdr weights)
-                             (cons (list (list inputs (first weights)) linear-hypothesis) caches)))))
+                             (cdr weights)))))
 
 ;; Neural network from Tariq Rashid' Book.
-(let ((input-nodes 3)
-      (hidden-nodes 3)
-      (output-nodes 3)
+(let (;+(input-nodes 3) ;; Never actually used in the calculations
+      ;+(hidden-nodes 3)
+      ;+(output-nodes 3)
       (activation-function #'sigmoid)
 
       (learning-rate 0.3)
-      (weights-input-hidden (create-sample-matrix 3 3 #'generate-gaussian-sample))
-      (weights-hidden-output (create-sample-matrix 3 3 #'generate-gaussian-sample)))
+      (weights-input-hidden (first test-weights)) ;; (create-sample-matrix 3 3 #'generate-gaussian-sample))
+      (weights-hidden-output (second test-weights))) ;; (create-sample-matrix 3 3 #'generate-gaussian-sample)))
 
   (defun query-nn (inputs)
+    ;; α(wh-o dot α (wi-h dot inputs) = output
     (apply-activation-function activation-function
                                (matrix-dot weights-hidden-output
                                            (apply-activation-function activation-function
