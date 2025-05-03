@@ -5,7 +5,7 @@ cl-numerical-programming TODO file -*- org -*-
 ** TODO Flesh out README
 Still needs good description, instructions to build, run and test.
 * machine-learning/neural-network.lisp
-** TODO Separate Activation Functions
+** DONE Separate Activation Functions
 Activation Functions should be in separate file, since they will be used for
 more than just a neural network.
 ** TODO Reformat Tariq Rashid's Code
@@ -22,12 +22,12 @@ This could be done better in lisp.
 * -------------------------------------------------------------------------------------------------------------------- *
 * Kanban
 #+BEGIN: kanban
-| TODO                          | IN-PROGRESS | TESTING | DONE |
-|-------------------------------+-------------+---------+------|
-| [[file:TODO::*Flesh out README][Flesh out README]]              |             |         |      |
-| [[file:TODO::*Separate Activation Functions][Separate Activation Functions]] |             |         |      |
-| [[file:TODO::*Reformat Tariq Rashid's Code][Reformat Tariq Rashid's Code]]  |             |         |      |
-| [[file:TODO::*Combine forward-propagations][Combine forward-propagations]]  |             |         |      |
-| [[file:TODO::*Update weights][Update weights]]                |             |         |      |
-| [[file:TODO::*Refactor train-nn][Refactor train-nn]]             |             |         |      |
+| TODO                         | IN-PROGRESS | TESTING | DONE                          |
+|------------------------------+-------------+---------+-------------------------------|
+| [[file:TODO::*Flesh out README][Flesh out README]]             |             |         |                               |
+|                              |             |         | [[file:TODO::*Separate Activation Functions][Separate Activation Functions]] |
+| [[file:TODO::*Reformat Tariq Rashid's Code][Reformat Tariq Rashid's Code]] |             |         |                               |
+| [[file:TODO::*Combine forward-propagations][Combine forward-propagations]] |             |         |                               |
+| [[file:TODO::*Update weights][Update weights]]               |             |         |                               |
+| [[file:TODO::*Refactor train-nn][Refactor train-nn]]            |             |         |                               |
 #+END:
