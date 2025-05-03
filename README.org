@@ -1,0 +1,7 @@
+cl-numerical-programming -*- mode: org -*-
+
+* Summary
+This is a project to help me learn about programming and
+designing neural networks.
+
+
