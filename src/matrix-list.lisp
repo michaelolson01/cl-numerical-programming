@@ -23,7 +23,7 @@
 
 (defun scalar-matrix-addition (scalar matrix)
   "mulitply a scalar to a matrix"
-  (mapcar (lambda (row) (scalar-vector-multiplication scalar row)) matrix))
+  (mapcar (lambda (row) (scalar-vector-addition scalar row)) matrix))
 
 ;; I need to improve this.
 ;;
@@ -118,6 +118,6 @@
   "Add two matrices together."
   (if (not matrix1)
       (reverse accumulator)
-      (matrix-combine function
+      (matrix-apply function
                       (cdr matrix1)
                       (cons (vector-apply function (first matrix1)) accumulator))))
