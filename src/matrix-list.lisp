@@ -60,6 +60,11 @@
       nil
       (apply #'mapcar #'list matrix)))
 
+(defun transpose-vector-list (vector)
+  (if (listp (first vector))
+      (first (transpose-matrix-list vector))
+      (transpose-matrix-list `(,vector))))
+
 ;; I won't need this right now, but the matrix has to be transposed to use this algorithm,
 ;; otherwords, I would have to get the first column of the matrix, and multiply it by the vector
 (defun vector-matrix-multiplication (vector matrix &optional accumulator)
@@ -142,6 +147,9 @@
   "Vector dot product vector1 • vector2"
   (dot vector1 vector2))
 
+(defun V.T (vector)
+  (transpose-vector-list vector))
+
 (defun M+ (scalar matrix)
   "Add scalar to matrix contents"
   (matrix-apply (lambda (in) (+ scalar in)) matrix))
@@ -156,7 +164,7 @@
 
 (defun M*M (matrix1 matrix2)
   "Mulitply contentx of matrix1 to matrix2"
-  (matrix-combine #'+ matrix1 matrix2))
+  (matrix-combine #'* matrix1 matrix2))
 
 (defun M• (matrix1 matrix2)
   "dot product: matrix1 • matrix"
