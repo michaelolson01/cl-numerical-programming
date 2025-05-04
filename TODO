@@ -12,7 +12,7 @@ more than just a neural network.
 This is basically python written in lisp, make it more lispy.
 *** DONE Combine forward-propagations
 Both forward-propogation and query-nn do the same thing. Combine theseand simplify
-*** IN-PROGRESS Update weights
+*** DONE Update weights
 Convert this to a recursive function, and simplify.
 There should only be one list for the sizes of the layers, not a separate variable per layer
 *** TODO Refactor train-nn
@@ -22,13 +22,13 @@ This could be done better in lisp.
 * -------------------------------------------------------------------------------------------------------------------- *
 * Kanban
 #+BEGIN: kanban
-| TODO                         | IN-PROGRESS    | TESTING | DONE                          |
-|------------------------------+----------------+---------+-------------------------------|
-| [[file:TODO::*Flesh out README][Flesh out README]]             |                |         |                               |
-|                              |                |         | [[file:TODO::*Separate Activation Functions][Separate Activation Functions]] |
-| [[file:TODO::*Reformat Tariq Rashid's Code][Reformat Tariq Rashid's Code]] |                |         |                               |
-|                              |                |         | [[file:TODO::*Combine forward-propagations][Combine forward-propagations]]  |
-|                              | [[file:TODO::*Update weights][Update weights]] |         |                               |
-| [[file:TODO::*Refactor train-nn][Refactor train-nn]]            |                |         |                               |
+| TODO                         | IN-PROGRESS | TESTING | DONE                          |
+|------------------------------+-------------+---------+-------------------------------|
+| [[file:TODO::*Flesh out README][Flesh out README]]             |             |         |                               |
+|                              |             |         | [[file:TODO::*Separate Activation Functions][Separate Activation Functions]] |
+| [[file:TODO::*Reformat Tariq Rashid's Code][Reformat Tariq Rashid's Code]] |             |         |                               |
+|                              |             |         | [[file:TODO::*Combine forward-propagations][Combine forward-propagations]]  |
+|                              |             |         | [[file:TODO::*Update weights][Update weights]]                |
+| [[file:TODO::*Refactor train-nn][Refactor train-nn]]            |             |         |                               |
 #+END:
 
