@@ -121,3 +121,53 @@
       (matrix-apply function
                       (cdr matrix1)
                       (cons (vector-apply function (first matrix1)) accumulator))))
+
+(defun V+ (scalar vector)
+  "Add scalar to vector contents"
+  (vector-apply (lambda (in) (+ scalar in)) vector))
+
+(defun V* (scalar vector)
+  "Multiply vector contents by scalar"
+  (vector-apply (lambda (in) (* scalar in)) vector))
+
+(defun V*V (vector1 vector2)
+  "Multiply contenst of vector1 and vector2"
+  (vector-combine #'* vector1 vector2))
+
+(defun V+V (vector1 vector2)
+  "Add contents of vector1 and vector2"
+  (vector-combine #'+ vector1 vector2))
+
+(defun V• (vector1 vector2)
+  "Vector dot product vector1 • vector2"
+  (dot vector1 vector2))
+
+(defun M+ (scalar matrix)
+  "Add scalar to matrix contents"
+  (matrix-apply (lambda (in) (+ scalar in)) matrix))
+
+(defun M* (scalar matrix)
+  "Multiply matrix contents by scalar"
+  (matrix-apply (lambda (in) (* scalar in)) matrix))
+
+(defun M+M (matrix1 matrix2)
+  "Add contents of matrix1 to matrix2"
+  (matrix-combine #'+ matrix1 matrix2))
+
+(defun M*M (matrix1 matrix2)
+  "Mulitply contentx of matrix1 to matrix2"
+  (matrix-combine #'+ matrix1 matrix2))
+
+(defun M• (matrix1 matrix2)
+  "dot product: matrix1 • matrix"
+  (matrix-dot matrix1 matrix2))
+
+(defun M.T (matrix)
+  "Transpose matrix"
+  (transpose-matrix-list matrix))
+
+(defun V*M (vector matrix)
+  (vector-matrix-multiplication vector matrix))
+
+(defun M*V (matrix vector)
+  (matrix-vector-multiplication matrix vector))
