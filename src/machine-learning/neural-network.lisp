@@ -49,7 +49,7 @@
                              activation
                              (cdr weights)))))
 
-(defun update-weight (weights errors outputs inputs learning-rate activation-sigma)
+(defun update-weight (weights errors outputs inputs learning-rate activation-prime)
   "Propagate backwards, and update the weights"
   ;; ▵Wjk = α1 * Ek * ⅆ/ⅆx α2 • Oj.T
   ;; Where
@@ -59,21 +59,131 @@
   ;; - Oj is the outputs
   (M+M weights
        (M* learning-rate
-           (M• (M*M errors (apply-activation activation-sigma outputs))
+           (M• (M*M errors (apply-activation activation-prime outputs))
                (M.T inputs)))))
 
-;; Neural network from Tariq Rashid' Book.
-(let (;+(input-nodes 3) ;; Never actually used in the calculations
-      ;+(hidden-nodes 3)
-      ;+(output-nodes 3)
+(defun train-network (inputs targets weights learning-rate α α-prime)
+  ;;                        ┌                                        ┐
+  ;;                        │ ┌                     ┐                │
+  ;; ┌             ┐        │ │ ┌    ┐   ┌        ┐ │                │
+  ;; │ W11 W21 W31 │        │ │ │ E1 │   │ α'(O1) │ │                │
+  ;; │             │        │ │ │    │   │        │ │   ┌          ┐ │
+  ;; │ W12 W22 W32 │ + LR * │ │ │ E2 │ * │ α'(O2) │ │ • │ I1 I2 I3 │ │
+  ;; │             │        │ │ │    │   │        │ │   └          ┘ │
+  ;; │ W13 W23 W33 │        │ │ │ E3 │   │ α'(O3) │ │                │
+  ;; └             ┘        │ │ └    ┘   └        ┘ │                │
+  ;;                        │ └                     ┘                │
+  ;;                        └                                        ┘
+  ;; W -> W2, W1              OE -> HE     FO -> HO       HO -> I
+  ;; LR * (targets - α(M• (second weights) α(M• (first weights) inputs)))
+  ;; expansion –
+  ;; (M* learning-rate (M• (* output-errors (apply-activation α-prime final-outputs)) (transpose (hidden-outputs))))
+  ;; (M* learning-rate (M• (* (M+ targets (M* -1 final-outputs))
+  ;;                          (apply-activation α-prime (apply-activation α final-inputs)))
+  ;;                       (transpose (apply-activation α hidden-inputs))))
+  ;; (M* learning-rate (M• (* (M+ targets (M* -1 (apply-activation α final-inputs)))
+  ;;                          (apply-activation α-prime (apply-activation α (M• (second weights) hidden-outputs))))
+  ;;                       (transpose (apply-activation α (M• (first weights) inputs)))))
+  ;; (M* learning-rate (M• (* (M+ targets
+  ;;                              (M* -1
+  ;;                                  (apply-activation α
+  ;;                                                    (M• (second weights)
+  ;;                                                        hidden-outputs))))
+  ;;                          (apply-activation α-prime
+  ;;                                            (apply-activation α
+  ;;                                                              (M• (second weights)
+  ;;                                                                  (M• (second weights)
+  ;;                                                                      hidden-inputs))))
+  ;;                       (transpose (apply-activation α (M• (first weights) inputs))))))
+  ;; —————————————————— final expansion of first set of weights
+  ;; (M* learning-rate (M• (* (M+ targets
+  ;;                              (M* -1
+  ;;                                  (apply-activation α
+  ;;                                                    (M• (second weights)
+  ;;                                                        (apply-activation α
+  ;;                                                                          hidden-inputs)))))
+  ;;                          (apply-activation α-prime
+  ;;                                            (apply-activation α
+  ;;                                                              (M• (second weights)
+  ;;                                                                  (M• (second weights)
+  ;;                                                                      (M• (first weights)
+  ;;                                                                          inputs)))))
+  ;;                          (transpose (apply-activation α (M• (first weights) inputs))))))
+  ;; —————————————————————————— Second Set
+  ;; (M* learning-rate (M• (* hidden-errors (apply-activation α-prime hidden-outputs)) (transpose input)))
+  ;; (M* learning-rate (M• (* (M• (M.T (second weights)) output-errors)
+  ;;                          (apply-activation α-prime (apply-activation α hidden-inputs)))
+  ;;                       (transpose input)))
+  ;; (M* learning-rate (M• (* (M• (M.T (second weights)) (M+ targets (M* -1 final-outputs)))
+  ;;                          (apply-activation α-prime (apply-activation α (M• (first weights) inputs)))
+  ;;                       (transpose input)))
+  ;; (M* learning-rate (M• (* (M• (M.T (second weights)) (M+ targets (M* -1 (apply-activation α final-inputs))))
+  ;;                          (apply-activation α-prime (apply-activation α (M• (first weights) inputs)))
+  ;;                       (transpose input))))
+  ;; (M* learning-rate (M• (* (M• (M.T (second weights))
+  ;;                              (M+ targets
+  ;;                                  (M* -1 (apply-activation α
+  ;;                                                           (M• (second weights)
+  ;;                                                               (apply-activation α
+  ;;                                                                                 hidden-inputs))))))
+  ;;                          (apply-activation α-prime (apply-activation α (M• (first weights) inputs)))
+  ;;                       (transpose input))))
+  ;; ;;  —————————————————— final expansion of second set of weights
+  ;; (M* learning-rate (M• (* (M• (M.T (second weights))
+  ;;                              (M+ targets
+  ;;                                  (M* -1 (apply-activation α
+  ;;                                                           (M• (second weights)
+  ;;                                                               (apply-activation α
+  ;;                                                                                 (M• (first weights)
+  ;;                                                                                     inputs)))))))
+  ;;                          (apply-activation α-prime
+  ;;                                            (apply-activation α
+  ;;                                                              (M• (first weights)
+  ;;                                                                  inputs))))
+  ;;                       (transpose input)))
+
+  (let* ((final-inputs (M• (second weights) hidden-outputs))
+         (hidden-inputs (M• (first weights) inputs))
+         (hidden-outputs (apply-activation α hidden-inputs))
+         (final-outputs (apply-activation α final-inputs))
+         (output-errors (M+ targets (M* -1 final-outputs)))
+         (hidden-errors (M• (M.T (second weights)) output-errors))
+
+    (setf weights-hidden-output ;; (second weights)
+          (update-weight weights-hidden-output ;; weights
+                         output-errors ;; errors
+                         final-outputs ;; outputs
+                         hidden-outputs ;; inputs
+                         learning-rate ;; learning rate
+                         α-prime ;; ⅆ/ⅆx of activation function
+                         ))
+
+    (setf weights-input-hidden ;; (first weights)
+          (update-weight weights-input-hidden ;; weights
+                          hidden-errors       ;; errors
+                          hidden-outputs      ;; outputs
+                          inputs              ;; inputs
+                          learning-rate       ;; learning rate
+                          α-prime    ;; ⅆ/ⅆx of activation-function
+                          )))))
+
+(defun train-network-rec (inputs targets weights learning-rate α α-prime &optional (accumulator nil))
+  (if (not weights)
+      accumulator
+      (train-network-rec inputs targets (cdr weights) learning-rate α α-prime (cons (first weights) accumulator))))
+
+;;; Neural network from Tariq Rashid' Book.
+(let ((input-nodes 3)
+      (hidden-nodes 3)
+      (output-nodes 3)
       (activation #'sigmoid)
 
       (learning-rate 0.3)
-      (weights-input-hidden (create-sample-matrix 3 3 #'generate-gaussian-sample))
-      (weights-hidden-output (create-sample-matrix 3 3 #'generate-gaussian-sample)))
+      (weights-input-hidden (create-sample-matrix input-nodes hidden-nodes #'generate-gaussian-sample))
+      (weights-hidden-output (create-sample-matrix hidden-nodes output-nodes #'generate-gaussian-sample)))
 
   (defun query-nn (inputs)
-    ;; α(wh-o dot α (wi-h dot inputs) = output
+    ;; α(wh-o • α (wi-h • inputs) = output
     (apply-activation activation
                       (M• weights-hidden-output
                           (apply-activation activation

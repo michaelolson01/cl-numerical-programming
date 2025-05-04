@@ -15,20 +15,20 @@ Both forward-propogation and query-nn do the same thing. Combine theseand simpli
 *** DONE Update weights
 Convert this to a recursive function, and simplify.
 There should only be one list for the sizes of the layers, not a separate variable per layer
-*** TODO Refactor train-nn
+*** IN-PROGRESS Refactor train-nn
 The train function is really just a python list variables, set variables, and then update weights
 This could be done better in lisp.
 
 * -------------------------------------------------------------------------------------------------------------------- *
 * Kanban
 #+BEGIN: kanban
-| TODO                         | IN-PROGRESS | TESTING | DONE                          |
-|------------------------------+-------------+---------+-------------------------------|
-| [[file:TODO::*Flesh out README][Flesh out README]]             |             |         |                               |
-|                              |             |         | [[file:TODO::*Separate Activation Functions][Separate Activation Functions]] |
-| [[file:TODO::*Reformat Tariq Rashid's Code][Reformat Tariq Rashid's Code]] |             |         |                               |
-|                              |             |         | [[file:TODO::*Combine forward-propagations][Combine forward-propagations]]  |
-|                              |             |         | [[file:TODO::*Update weights][Update weights]]                |
-| [[file:TODO::*Refactor train-nn][Refactor train-nn]]            |             |         |                               |
+| TODO                         | IN-PROGRESS       | TESTING | DONE                          |
+|------------------------------+-------------------+---------+-------------------------------|
+| [[file:TODO::*Flesh out README][Flesh out README]]             |                   |         |                               |
+|                              |                   |         | [[file:TODO::*Separate Activation Functions][Separate Activation Functions]] |
+| [[file:TODO::*Reformat Tariq Rashid's Code][Reformat Tariq Rashid's Code]] |                   |         |                               |
+|                              |                   |         | [[file:TODO::*Combine forward-propagations][Combine forward-propagations]]  |
+|                              |                   |         | [[file:TODO::*Update weights][Update weights]]                |
+|                              | [[file:TODO::*Refactor train-nn][Refactor train-nn]] |         |                               |
 #+END:
 
