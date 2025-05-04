@@ -13,14 +13,14 @@
                                                       #'generate-gaussian-sample)
                                 accumulator))))
 
-;;; Have not gotten this far in the book yet.
+;;; Have not learned about biases yet
 (defun initialize-biases (layers &optional accumulator)
   (if (= 1 (length layers))
       (reverse accumulator)
-      (initialize-weights-rec (cdr layers)
-                              (cons (create-sample-list (second layers)
-                                                        (lambda () 0.0))
-                                    accumulator))))
+      (initialize-biases (cdr layers)
+                         (cons (create-sample-list (second layers)
+                                                   (lambda () 0.0))
+                               accumulator))))
 
 ;;; helper functions
 ;;; only because it is faster to do complex calculations once, and then multiply the answers together.
@@ -30,7 +30,7 @@
 (defun ^3 (x)
   (* x x x))
 
-(defun forward-propagation (inputs activation-function weights)
+(defun forward-propagation (inputs activation weights)
   "Propagate forward in the neural network"
   ;; Interestingly enough, the number of nodes between layers is inferred by the
   ;; current matrix of weights.
@@ -43,51 +43,94 @@
   (if (not weights)
       ;; No weights means we are done processing this pass.
       inputs
-      (let ((linear-hypothesis (matrix-dot (first weights)
-                                           inputs)))
-        (forward-propagation (apply-activation-function activation-function linear-hypothesis)
-                             activation-function
+      (let ((linear-hypothesis (M• (first weights)
+                                   inputs)))
+        (forward-propagation (apply-activation activation linear-hypothesis)
+                             activation
                              (cdr weights)))))
+
+(defun update-weight (weights errors outputs inputs learning-rate activation-sigma)
+  "Propagate backwards, and update the weights"
+  ;; ▵Wjk = α1 * Ek * ⅆ/ⅆx α2 • Oj.T
+  ;; Where
+  ;; - α1 is the learning rate
+  ;; - Ek is the error
+  ;; - α2 is the activation function
+  ;; - Oj is the outputs
+  (M+M weights
+       (M* learning-rate
+           (M• (M*M errors (apply-activation activation-sigma outputs))
+               (M.T inputs)))))
 
 ;; Neural network from Tariq Rashid' Book.
 (let (;+(input-nodes 3) ;; Never actually used in the calculations
       ;+(hidden-nodes 3)
       ;+(output-nodes 3)
-      (activation-function #'sigmoid)
+      (activation #'sigmoid)
 
       (learning-rate 0.3)
-      (weights-input-hidden (first test-weights)) ;; (create-sample-matrix 3 3 #'generate-gaussian-sample))
-      (weights-hidden-output (second test-weights))) ;; (create-sample-matrix 3 3 #'generate-gaussian-sample)))
+      (weights-input-hidden (create-sample-matrix 3 3 #'generate-gaussian-sample))
+      (weights-hidden-output (create-sample-matrix 3 3 #'generate-gaussian-sample)))
 
   (defun query-nn (inputs)
     ;; α(wh-o dot α (wi-h dot inputs) = output
-    (apply-activation-function activation-function
-                               (matrix-dot weights-hidden-output
-                                           (apply-activation-function activation-function
-                                                                      (matrix-dot weights-input-hidden
-                                                                                  inputs)))))
+    (apply-activation activation
+                      (M• weights-hidden-output
+                          (apply-activation activation
+                                            (M• weights-input-hidden
+                                                inputs)))))
 
   (defun update-weights (weights errors outputs inputs)
-    (matrix-combine #'+
-                    weights
-                    (matrix-apply (lambda (input) (* learning-rate input))
-                                  (matrix-dot (matrix-combine #'*
-                                                              (matrix-combine #'*
-                                                                              errors
-                                                                              outputs)
-                                                              (matrix-apply (lambda (input) (+ 1 input))
-                                                                            (matrix-apply (lambda (input) (* -1 input))
-                                                                                          outputs)))
-                                              (transpose-matrix-list inputs)))))
+    "Update one set of weights once."
+    (M+M weights
+         (M* learning-rate
+             (M• (M*M errors
+                      (M*M outputs
+                           (M+ 1.0 (M* -1 outputs)))) ;; 1 - outputs
+                 (M.T inputs)))))
 
   (defun train-nn (inputs-list targets-list)
-    (let* ((inputs (transpose-matrix-list (list inputs-list))) ;;
-           (targets (transpose-matrix-list (list targets-list)))
+    (let* ((inputs (transpose-matrix-list (list inputs-list))) ;; It expects the inputs to be (1 2 3) not ((1) (2) (3))
            (hidden-inputs (matrix-dot weights-input-hidden inputs))
-           (hidden-outputs (apply-activation-function activation-function hidden-inputs)) ;;
+           (hidden-outputs (apply-activation-function activation-function hidden-inputs))
            (final-inputs (matrix-dot weights-hidden-output hidden-outputs))
-           (final-outputs (apply-activation-function activation-function final-inputs)) ;;
-           (output-errors (matrix-apply #'+ targets (scalar-matrix-multiplication -1 final-outputs))) ;;
-           (hidden-errors (matrix-dot (transpose-matrix-list weights-hidden-output) output-errors))) ;;
-      (setf weights-hidden-output (update-weights weights-hidden-output output-errors final-outputs hidden-outputs))
-      (setf weights-input-hidden (update-weights weights-input-hidden hidden-errors hidden-outputs inputs)))))
+           (final-outputs (apply-activation-function activation-function final-inputs))
+           (targets (transpose-matrix-list (list targets-list)))
+           (output-errors (matrix-apply #'+ targets (scalar-matrix-multiplication -1 final-outputs)))
+           (hidden-errors (matrix-dot (transpose-matrix-list weights-hidden-output) output-errors)))
+      (setf weights-hidden-output
+            (update-weights weights-hidden-output
+                            output-errors
+                            final-outputs
+                            hidden-outputs)) ;; (second test-weights)
+      (setf weights-input-hidden
+            (update-weights weights-input-hidden
+                            hidden-errors
+                            hidden-outputs
+                            inputs))))) ;; (first test-weights)
+
+(defun train-nn (inputs targets-list)
+  ;;
+  ;; ┌ I1 ┐     ┌ W11 W12 W13 ┐
+  ;; │    │     │             │
+  ;; │ I2 │ dot │ W21 W22 W23 │
+  ;; │    │     │             │
+  ;; └ I3 ┘     └ W31 W32 W33 ┘
+  ;;
+    (let* (;; I am expecting a matrix in columnar form for both inputs and targets
+           (hidden-inputs (M-dot weights-input-hidden inputs))
+           (hidden-outputs (apply-activation-function activation-function hidden-inputs))
+           (final-inputs (M-dot weights-hidden-output hidden-outputs))
+           (final-outputs (apply-activation-function activation-function final-inputs))
+           (output-errors (M+ targets (M* -1 final-outputs)))
+           (hidden-errors (M-dot (transpose-matrix-list weights-hidden-output) output-errors)))
+      (setf weights-hidden-output
+            (update-weights weights-hidden-output
+                            output-errors
+                            final-outputs
+                            hidden-outputs)) ;; (second test-weights)
+      (setf weights-input-hidden
+            (update-weights weights-input-hidden
+                            hidden-errors
+                            hidden-outputs
+                            inputs))))) ;; (first test-weights)
