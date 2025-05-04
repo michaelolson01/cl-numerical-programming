@@ -90,47 +90,21 @@
                  (M.T inputs)))))
 
   (defun train-nn (inputs-list targets-list)
-    (let* ((inputs (transpose-matrix-list (list inputs-list))) ;; It expects the inputs to be (1 2 3) not ((1) (2) (3))
-           (hidden-inputs (matrix-dot weights-input-hidden inputs))
-           (hidden-outputs (apply-activation-function activation-function hidden-inputs))
-           (final-inputs (matrix-dot weights-hidden-output hidden-outputs))
-           (final-outputs (apply-activation-function activation-function final-inputs))
-           (targets (transpose-matrix-list (list targets-list)))
-           (output-errors (matrix-apply #'+ targets (scalar-matrix-multiplication -1 final-outputs)))
-           (hidden-errors (matrix-dot (transpose-matrix-list weights-hidden-output) output-errors)))
-      (setf weights-hidden-output
-            (update-weights weights-hidden-output
-                            output-errors
-                            final-outputs
-                            hidden-outputs)) ;; (second test-weights)
-      (setf weights-input-hidden
-            (update-weights weights-input-hidden
-                            hidden-errors
-                            hidden-outputs
-                            inputs))))) ;; (first test-weights)
-
-(defun train-nn (inputs targets-list)
-  ;;
-  ;; ┌ I1 ┐     ┌ W11 W12 W13 ┐
-  ;; │    │     │             │
-  ;; │ I2 │ dot │ W21 W22 W23 │
-  ;; │    │     │             │
-  ;; └ I3 ┘     └ W31 W32 W33 ┘
-  ;;
-    (let* (;; I am expecting a matrix in columnar form for both inputs and targets
-           (hidden-inputs (M-dot weights-input-hidden inputs))
-           (hidden-outputs (apply-activation-function activation-function hidden-inputs))
-           (final-inputs (M-dot weights-hidden-output hidden-outputs))
-           (final-outputs (apply-activation-function activation-function final-inputs))
+    (let* ((inputs (V.T list inputs-list)) ;; It expects the inputs to be (1 2 3) not ((1) (2) (3))
+           (hidden-inputs (M• weights-input-hidden inputs))
+           (hidden-outputs (apply-activation activation hidden-inputs))
+           (final-inputs (M• weights-hidden-output hidden-outputs))
+           (final-outputs (apply-activation activation final-inputs))
+           (targets (V.T targets-list))
            (output-errors (M+ targets (M* -1 final-outputs)))
-           (hidden-errors (M-dot (transpose-matrix-list weights-hidden-output) output-errors)))
+           (hidden-errors (M• (M.T weights-hidden-output) output-errors)))
       (setf weights-hidden-output
             (update-weights weights-hidden-output
                             output-errors
                             final-outputs
-                            hidden-outputs)) ;; (second test-weights)
+                            hidden-outputs))
       (setf weights-input-hidden
             (update-weights weights-input-hidden
                             hidden-errors
                             hidden-outputs
-                            inputs))))) ;; (first test-weights)
+                            inputs)))))
