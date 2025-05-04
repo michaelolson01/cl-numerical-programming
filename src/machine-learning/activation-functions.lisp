@@ -27,7 +27,8 @@
   (/ 1 (+ 1 (exp (- x)))))
 
 (defun sigmoid-prime (x)
-  (* (sigmoid x) (- 1 (sigmoid x))))
+  (let ((result (sigmoid x)))
+    (* result (- 1 result))))
 
 (defun shifted-relu (x &optional (shift -1))
   (max shift x))
@@ -76,7 +77,6 @@
       s
       (* scale α (exp x))))
 
-
 ;; from wolfram
 ;; found on cppreference.com
 (defun tanh-original (x)
@@ -96,7 +96,7 @@
 (defun tanh-prime (x)
   (- 1 (^2 (tanh x))))
 
-(defun apply-activation-function (function matrix)
+(defun apply-activation (function matrix)
   "Applies the activation function to every element of a matrix."
   ;; This should use an apply function from matrices.
   (mapcar (lambda (input) (mapcar function input)) matrix))
