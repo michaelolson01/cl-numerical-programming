@@ -8,7 +8,7 @@
         ((= x 0) 0.5)
         (t 1))) ;; (> x 0)
 
-(defun signum (x)
+(defun signum-2 (x)
   "unit-step centered around 0"
   (cond ((< x 0) -1)
         ((= x 0) 0)
@@ -69,12 +69,12 @@
 
 (defun selu (x &optional (α 1.0) (scale 1.0))
   (if (> x 0)
-      (* s x)
-      (* s α (- (exp x) 1))))
+      (* scale x)
+      (* scale α (- (exp x) 1))))
 
 (defun selu-prime (x &optional (α 1.0) (scale 1.0))
   (if (> x 0)
-      s
+      scale
       (* scale α (exp x))))
 
 ;; from wolfram
