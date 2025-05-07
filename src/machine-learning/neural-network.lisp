@@ -71,15 +71,26 @@
   ;; expansion –
 
   ;; The functions to evaluate the errors is different, is it a simplificcation?
-  ;;                           ┌                ┐
-  ;;                  ┌    ┐   │      ┌       ┐ │
-  ;;                  │ T1 │   │      │ (FO1) │ │
-  ;;                  │    │   │      │       │ │
-  ;;  output-errors = │ T2 │ + │ -1 * │ (FO2) │ │
-  ;;                  │    │   │      │       │ │
-  ;;                  │ T3 │   │      │ (FO3) │ │
-  ;;                  └    ┘   │      └       ┘ │
-  ;;                           └                ┘
+  ;;                           ┌              ┐
+  ;;                  ┌    ┐   │      ┌     ┐ │
+  ;;                  │ T1 │   │      │ FO1 │ │
+  ;;                  │    │   │      │     │ │
+  ;;  output-errors = │ T2 │ + │ -1 * │ FO2 │ │
+  ;;                  │    │   │      │     │ │
+  ;;                  │ T3 │   │      │ FO3 │ │
+  ;;                  └    ┘   │      └     ┘ │
+  ;;                           └              ┘
+
+  ;; The functions to evaluate the errors is different, is it a simplificcation?
+  ;;                           ┌              ┐
+  ;;                  ┌    ┐   │      ┌     ┐ │
+  ;;                  │ T1 │   │      │ FO1 │ │
+  ;;                  │    │   │      │     │ │
+  ;;  hidden-errors = │ T2 │ + │ -1 * │ FO2 │ │
+  ;;                  │    │   │      │     │ │
+  ;;                  │ T3 │   │      │ FO3 │ │
+  ;;                  └    ┘   │      └     ┘ │
+  ;;                           └              ┘
 
   (let* ((final-inputs (M• (second weights) hidden-outputs))
          (hidden-inputs (M• (first weights) inputs))
@@ -106,6 +117,7 @@
                           α-prime    ;; ⅆ/ⅆx of activation-function
                           )))))
 
+;; write this
 (defun train-network-rec (inputs targets weights learning-rate α α-prime &optional (accumulator nil))
   (if (not weights)
       accumulator
