@@ -81,6 +81,14 @@
   ;;                  └    ┘   │      └     ┘ │
   ;;                           └              ┘
 
+  ;;                  ┌             ┐
+  ;;                  │ T1 - α(FI1) │
+  ;;                  │             │
+  ;;  output-errors = │ T2 - α(FI2) │
+  ;;                  │             │
+  ;;                  │ T3 - α(FI3) │
+  ;;                  └             ┘
+
   ;; The functions to evaluate the errors is different, is it a simplificcation?
   ;;                           ┌              ┐
   ;;                  ┌    ┐   │      ┌     ┐ │
@@ -92,9 +100,9 @@
   ;;                  └    ┘   │      └     ┘ │
   ;;                           └              ┘
 
-  (let* ((final-inputs (M• (second weights) hidden-outputs))
-         (hidden-inputs (M• (first weights) inputs))
+  (let* ((hidden-inputs (M• (first weights) inputs))
          (hidden-outputs (apply-activation α hidden-inputs))
+	 (final-inputs (M• (second weights) hidden-outputs))
          (final-outputs (apply-activation α final-inputs))
          (output-errors (M+ targets (M* -1 final-outputs)))
          (hidden-errors (M• (M.T (second weights)) output-errors))
