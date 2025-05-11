@@ -89,7 +89,16 @@
   ;;                  │             │
   ;;                  │ T3 - α(FI3) │
   ;;                  └             ┘
-
+  ;;
+  ;; For output-erros, this is from the output, and the outputs have no weights assigned to them, so
+  ;;                  ┌       ┐   ┌             ┐
+  ;;                  │ 1 1 1 │   │ T1 - α(FI1) │
+  ;;                  │       │   │             │
+  ;;  output-errors = │ 1 1 1 │ • │ T2 - α(FI2) │
+  ;;                  │       │   │             │
+  ;;                  │ 1 1 1 │   │ T3 - α(FI3) │
+  ;;                  └       ┘   └             ┘
+  ;;
   ;;                  ┌             ┐   ┌             ┐
   ;;                  │ W11 W12 W13 │   │ T1 - α(FI1) │
   ;;                  │             │   │             │
