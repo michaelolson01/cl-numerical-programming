@@ -51,11 +51,6 @@ def forward_prop(X, params):
 
     return A, caches
 
-def sigmoid(Z):
-    A = 1/(1+np.exp(np.dot(-1, Z)))
-
-    return A
-
 def cost_function(A, Y):
     m = Y.shape[1]
 
