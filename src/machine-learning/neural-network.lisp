@@ -14,6 +14,7 @@
                                 accumulator))))
 
 ;;; Have not learned about biases yet
+;;; Will be adding later
 (defun initialize-biases (layers &optional accumulator)
   (if (= 1 (length layers))
       (reverse accumulator)
@@ -89,20 +90,18 @@
   ;;                  │ T3 - α(FI3) │
   ;;                  └             ┘
 
-  ;; The functions to evaluate the errors is different, is it a simplificcation?
-  ;;                           ┌              ┐
-  ;;                  ┌    ┐   │      ┌     ┐ │
-  ;;                  │ T1 │   │      │ FO1 │ │
-  ;;                  │    │   │      │     │ │
-  ;;  hidden-errors = │ T2 │ + │ -1 * │ FO2 │ │
-  ;;                  │    │   │      │     │ │
-  ;;                  │ T3 │   │      │ FO3 │ │
-  ;;                  └    ┘   │      └     ┘ │
-  ;;                           └              ┘
+  ;;                  ┌             ┐   ┌             ┐
+  ;;                  │ W11 W12 W13 │   │ T1 - α(FI1) │
+  ;;                  │             │   │             │
+  ;;  hidden-errors = │ W21 W22 W23 │ • │ T2 - α(FI2) │
+  ;;                  │             │   │             │
+  ;;                  │ W31 W32 W33 │   │ T3 - α(FI3) │
+  ;;                  └             ┘   └             ┘
+
 
   (let* ((hidden-inputs (M• (first weights) inputs))
          (hidden-outputs (apply-activation α hidden-inputs))
-	 (final-inputs (M• (second weights) hidden-outputs))
+         (final-inputs (M• (second weights) hidden-outputs))
          (final-outputs (apply-activation α final-inputs))
          (output-errors (M+ targets (M* -1 final-outputs)))
          (hidden-errors (M• (M.T (second weights)) output-errors))
