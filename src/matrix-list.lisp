@@ -78,20 +78,31 @@
                                         (cdr matrix)
                                         (cons (dot (first matrix) vector) accumulator)))))
 
-;; should return a column if the second is just a column.
-;; maybe it is because I attempted to simplify by using a transposed matrix, and the vector dot product
-;; which i have the wrong algorithm for...
-(defun matrix-dot (matrix1 matrix2 &optional matrix2t accumulator)
+(defun matrix-dot-helper (vector matrix &optional (matrix.T nil) (accumulator nil))
+  (cond ((and (not matrix.T) (not accumulator))
+         (matrix-dot-helper vector
+                            matrix
+                            (transpose-matrix-list matrix)
+                            nil))
+        ((not matrix.T)
+         (reverse accumulator))
+        (T (matrix-dot-helper vector
+                              matrix
+                              (cdr matrix.T)
+                              (cons (dot vector (first matrix.T)) accumulator)))))
+
+(defun matrix-dot (matrix1 matrix2 &optional accumulator)
   "Multiply two matrices together, matrix dot product or inner product"
+  ;; first off,
   (if (not matrix1)
-      (mapcar #'list (reverse accumulator))
+      (reverse accumulator)
       (progn
-        (if (not matrix2t)
-            (setf matrix2t (transpose-matrix-list matrix2)))
+        (assert (= (length (first matrix1)) (length matrix2)))
         (matrix-dot (cdr matrix1)
                     matrix2
-                    (cdr matrix2t)
-                    (cons (dot (first matrix1) (first matrix2t)) accumulator)))))
+                    (cons (matrix-dot-helper (first matrix1)
+                                             matrix2)
+                          accumulator)))))
 
 (defun vector-combine (function vector1 vector2 &optional accumulator)
   "Adds two vectors together"
@@ -158,6 +169,10 @@
   "Multiply matrix contents by scalar"
   (matrix-apply (lambda (in) (* scalar in)) matrix))
 
+(defun M/ (scalar matrix)
+  "Multiply matrix contents by scalar"
+  (matrix-apply (lambda (in) (/ scalar in)) matrix))
+
 (defun M+M (matrix1 matrix2)
   "Add contents of matrix1 to matrix2"
   (matrix-combine #'+ matrix1 matrix2))
@@ -165,6 +180,10 @@
 (defun M*M (matrix1 matrix2)
   "Mulitply contentx of matrix1 to matrix2"
   (matrix-combine #'* matrix1 matrix2))
+
+(defun M/M (matrix1 matrix2)
+  "Mulitply contentx of matrix1 to matrix2"
+  (matrix-combine #'/ matrix1 matrix2))
 
 (defun M• (matrix1 matrix2)
   "dot product: matrix1 • matrix"
@@ -179,3 +198,25 @@
 
 (defun M*V (matrix vector)
   (matrix-vector-multiplication matrix vector))
+
+(defun matrix-sum (matrix &key (accumulator nil) (axis nil) (keep-dims nil))
+  (if (not matrix)
+      (if (null axis)
+          accumulator
+          (if (null keep-dims)
+              (reverse accumulator)
+              (M.T (list (reverse accumulator)))))
+      (cond ((null axis)
+             (let ((acc (if (not accumulator )
+                            0
+                            accumulator)))
+               (matrix-sum (cdr matrix)
+                           :accumulator (+ (apply #'+ (first matrix)) acc)
+                           :axis axis
+                           :keep-dims keep-dims)))
+            ((= 1 axis)
+             (matrix-sum (cdr matrix)
+                         :accumulator (cons (apply #'+ (first matrix)) accumulator)
+                         :axis axis
+                         :keep-dims keep-dims))
+            (t (format t "Not implemented yet")))))
