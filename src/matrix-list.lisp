@@ -27,15 +27,17 @@
 
 ;; I need to improve this.
 ;;
-;;  (dot (x1 x2 x3) (y1 y2 y3)) - automatically convert the second to a column and calculate it.
-;;  (dot (x1 x2 x3) ((y1) (y2) (y3)) -- already put in a column, just calculate it.
+;;  (vector-dot-product (x1 x2 x3) (y1 y2 y3)) - automatically convert the second to a column and calculate it.
+;;  (vector-dot-product (x1 x2 x3) ((y1) (y2) (y3)) -- already put in a column, just calculate it.
 ;;
-(defun dot (vector1 vector2)
-  "multiply a vector to a vector"
-  ;; first check to make sure they are the correct dimensions
-;;  (let ((vector2-a (if (numberp (first vector2) 1)
-;;                       (mapcar #'list vector2)
-;;                       vector2)))
+(defun vector-dot-product (vector1 vector2)
+  "Calculate the dot product of two vectors"
+  (if (or (null vector1) (null vector2))
+      0
+      (+ (* car vector1 (car vector2))
+         (vector-dot-product (cdr vector1) (cdr vector2)))))
+
+(defun vector-dot-product-2 (vector1 vector2)
   (apply #'+ (apply #'mapcar #'* (list vector1 vector2))))
 
 (defun vector-vector-addition (vector1 vector2)
@@ -50,7 +52,7 @@
           (reverse accumulator)
           (matrix-vector-multiplication (cdr matrix)
                                         vector
-                                        (cons (list (dot (first matrix) vector)) accumulator)))))
+                                        (cons (list (vector-dot-product (first matrix) vector)) accumulator)))))
 
 ;; (( 1 2 3 )       (( 1 4 7 )
 ;;  ( 4 5 6 )   -->  ( 2 5 8 )
@@ -76,7 +78,7 @@
           (reverse accumulator)
           (vector-matrix-multiplication vector
                                         (cdr matrix)
-                                        (cons (dot (first matrix) vector) accumulator)))))
+                                        (cons (vector-dot-product (first matrix) vector) accumulator)))))
 
 (defun matrix-dot-helper (vector matrix &optional (matrix.T nil) (accumulator nil))
   (cond ((and (not matrix.T) (not accumulator))
@@ -89,7 +91,7 @@
         (T (matrix-dot-helper vector
                               matrix
                               (cdr matrix.T)
-                              (cons (dot vector (first matrix.T)) accumulator)))))
+                              (cons (vector-dot-product vector (first matrix.T)) accumulator)))))
 
 (defun matrix-dot (matrix1 matrix2 &optional accumulator)
   "Multiply two matrices together, matrix dot product or inner product"
@@ -156,7 +158,7 @@
 
 (defun V• (vector1 vector2)
   "Vector dot product vector1 • vector2"
-  (dot vector1 vector2))
+  (vector-dot-product vector1 vector2))
 
 (defun V.T (vector)
   (transpose-vector-list vector))

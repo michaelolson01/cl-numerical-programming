@@ -70,10 +70,12 @@
         (grads (multiple-value-list (one-layer-backwards dAL current-cache))))
     (loop for cache-counter from (- cache-length 2) downto 0 do
       (setf current_cache (nth cache-counter caches))
-      (multiple-value-bind (dA-prev-temp dW-temp db-temp) (one-layer-backwards (first (nth (+ 1 cache-counter))) current-cache))
-      (setf (first (nth l grads)) dA-prev-temp)
-      (setf (second (nth (+ l 1) grads)) dW-temp)
-      (setf (third (nth (+ l 1) grads)) db-temp))))
+      (multiple-value-bind (dA-prev-temp dW-temp db-temp)
+          (one-layer-backwards (first (nth (+ 1 cache-counter)))
+                               current-cache)
+        (setf (first (nth l grads)) dA-prev-temp)
+        (setf (second (nth (+ l 1) grads)) dW-temp)
+        (setf (third (nth (+ l 1) grads)) db-temp)))
+    grads))
 
-(multiple-value-list )
-    
+
