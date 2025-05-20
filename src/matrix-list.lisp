@@ -225,3 +225,30 @@
                          :axis axis
                          :keep-dims keep-dims))
             (t (format t "Not implemented yet")))))
+
+(defun get-matrix-values (matrix &optional (accumulator nil))
+  "Pulls out all the values in a matrix"
+  (if (null matrix)
+      (reverse accumulator)
+      (if (listp (first matrix))
+          (get-matrix-values (cdr matrix) (append (reverse (car matrix)) accumulator))
+          (get-matrix-values (cdr matrix) (cons (car matrix) accumulator)))))
+
+(defun build-vector (items cols &optional (accumulator nil))
+  "Builds a vector of length cols from items"
+  (if (= 0 cols)
+      (values (reverse accumulator) items)
+      (build-vector (cdr items) (- cols 1) (cons (car items) accumulator))))
+
+(defun matrix-reshape (matrix rows cols &optional (items nil) (accumulator nil))
+  "reshape a matrix to rows and cols"
+  (if (and (null items) (null accumulator))
+      (progn
+        (setf items (get-matrix-values matrix))
+        (if (not (= (length items) (* rows cols)))
+            (error "Total size of new array must not change"))))
+  (if (= rows 0)
+      (reverse accumulator)
+      (multiple-value-bind (new-row remaining-items) (build-vector items cols)
+        (matrix-reshape matrix (- rows 1) cols remaining-items (cons new-row accumulator)))))
+
