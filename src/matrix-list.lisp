@@ -7,7 +7,7 @@
 ;; Matrix-A * Matrix-B - Matrix Multiplication
 
 ;; This is the matrix functions done in lists instead of vectors
-;; They will be slower, but somewhat easier to use.
+;; They will be slower, but visually easier to use.
 
 (defun scalar-vector-multiplication (scalar vector)
   "multiply a scalar to a vector"
@@ -196,12 +196,15 @@
   (transpose-matrix-list matrix))
 
 (defun V*M (vector matrix)
+  "Vector times a matrix"
   (vector-matrix-multiplication vector matrix))
 
 (defun M*V (matrix vector)
+  "matrix times a vector"
   (matrix-vector-multiplication matrix vector))
 
 (defun matrix-sum (matrix &key (accumulator nil) (axis nil) (keep-dims nil))
+  "Sum up the values in the matrix."
   (if (not matrix)
       (if (null axis)
           accumulator
