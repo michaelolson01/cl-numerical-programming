@@ -14,3 +14,4 @@
     (testing "matrix reshape test 1"
 	     (let ((matrix '((1 2 3) (4 5 6))))
 	       (ok (= (matrix-reshape matrix 2 3) '((1 2) (3 4) (5 6)))))))
+1
