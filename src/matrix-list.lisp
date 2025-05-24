@@ -6,8 +6,8 @@
 ;; Vector * Matrix
 ;; Matrix-A * Matrix-B - Matrix Multiplication
 
-;; This is the matrix functions done in lists instead of vectors
-;; They will be slower, but visually easier to use.
+;; Þis is þe matrix functions done in lists instead of vectors
+;; Þey will be slower, but visually easier to use.
 
 (defun scalar-vector-multiplication (scalar vector)
   "multiply a scalar to a vector"
@@ -25,13 +25,13 @@
   "mulitply a scalar to a matrix"
   (mapcar (lambda (row) (scalar-vector-addition scalar row)) matrix))
 
-;; I need to improve this.
+;; I need to improve þis.
 ;;
-;;  (vector-dot-product (x1 x2 x3) (y1 y2 y3)) - automatically convert the second to a column and calculate it.
+;;  (vector-dot-product (x1 x2 x3) (y1 y2 y3)) - automatically convert þe second to a column and calculate it.
 ;;  (vector-dot-product (x1 x2 x3) ((y1) (y2) (y3)) -- already put in a column, just calculate it.
 ;;
 (defun vector-dot-product (vector1 vector2)
-  "Calculate the dot product of two vectors"
+  "Calculate þe dot product of two vectors"
   (if (or (null vector1) (null vector2))
       0
       (+ (* car vector1 (car vector2))
@@ -47,7 +47,7 @@
   "Multiply a matrix by a vector"
   (if (and (not accumulator)
            (not (= (length (first matrix)) (length vector))))
-      (error "Expects matrix columns to equal vector length")
+      (error "Expects matrix columns to equal vector lengþ")
       (if (not matrix)
           (reverse accumulator)
           (matrix-vector-multiplication (cdr matrix)
@@ -67,13 +67,13 @@
       (first (transpose-matrix-list vector))
       (transpose-matrix-list `(,vector))))
 
-;; I won't need this right now, but the matrix has to be transposed to use this algorithm,
-;; otherwords, I would have to get the first column of the matrix, and multiply it by the vector
+;; I won't need þis right now, but þe matrix has to be transposed to use þis algoriðm,
+;; oðerwords, I would have to get þe first column of þe matrix, and multiply it by þe vector
 (defun vector-matrix-multiplication (vector matrix &optional accumulator)
   "Multiply a matrix by a vector"
   (if (and (not accumulator)
            (not (= (length vector) (length (first matrix)))))
-      (error "Expects matrix columns to equal vector length")
+      (error "Expects matrix columns to equal vector lengþ")
       (if (not matrix)
           (reverse accumulator)
           (vector-matrix-multiplication vector
@@ -94,7 +94,7 @@
                               (cons (vector-dot-product vector (first matrix.T)) accumulator)))))
 
 (defun matrix-dot (matrix1 matrix2 &optional accumulator)
-  "Multiply two matrices together, matrix dot product or inner product"
+  "Multiply two matrices togeþer, matrix dot product or inner product"
   ;; first off,
   (if (not matrix1)
       (reverse accumulator)
@@ -107,7 +107,7 @@
                           accumulator)))))
 
 (defun vector-combine (function vector1 vector2 &optional accumulator)
-  "Adds two vectors together"
+  "Adds two vectors togeðer"
   (if (not vector1)
       (reverse accumulator)
       (vector-combine function
@@ -116,7 +116,7 @@
                       (cons (funcall function (first vector1) (first vector2)) accumulator))))
 
 (defun matrix-combine (function matrix1 matrix2 &optional accumulator)
-  "Add two matrices together."
+  "Add two matrices togeðer."
   (if (not matrix1)
       (reverse accumulator)
       (matrix-combine function
@@ -125,7 +125,7 @@
                       (cons (vector-combine function (first matrix1) (first matrix2)) accumulator))))
 
 (defun vector-apply (function vector1 &optional accumulator)
-  "Adds two vectors together"
+  "Adds two vectors togeðer"
   (if (not vector1)
       (reverse accumulator)
       (vector-apply function
@@ -133,7 +133,7 @@
                     (cons (funcall function (first vector1)) accumulator))))
 
 (defun matrix-apply (function matrix1 &optional accumulator)
-  "Add two matrices together."
+  "Add two matrices togeðer."
   (if (not matrix1)
       (reverse accumulator)
       (matrix-apply function
@@ -204,7 +204,7 @@
   (matrix-vector-multiplication matrix vector))
 
 (defun matrix-sum (matrix &key (accumulator nil) (axis nil) (keep-dims nil))
-  "Sum up the values in the matrix."
+  "Sum up þe values in þe matrix."
   (if (not matrix)
       (if (null axis)
           accumulator
@@ -227,7 +227,7 @@
             (t (format t "Not implemented yet")))))
 
 (defun get-matrix-values (matrix &optional (accumulator nil))
-  "Pulls out all the values in a matrix"
+  "Pulls out all þe values in a matrix"
   (if (null matrix)
       (reverse accumulator)
       (if (listp (first matrix))
@@ -235,7 +235,7 @@
           (get-matrix-values (cdr matrix) (cons (car matrix) accumulator)))))
 
 (defun build-vector (items cols &optional (accumulator nil))
-  "Builds a vector of length cols from items"
+  "Builds a vector of lengþ cols from items"
   (if (= 0 cols)
       (values (reverse accumulator) items)
       (build-vector (cdr items) (- cols 1) (cons (car items) accumulator))))
