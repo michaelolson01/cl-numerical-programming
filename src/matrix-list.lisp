@@ -6,8 +6,8 @@
 ;; Vector * Matrix
 ;; Matrix-A * Matrix-B - Matrix Multiplication
 
-;; Þis is þe matrix functions done in lists instead of vectors
-;; Þey will be slower, but visually easier to use.
+;; Ðis is ðe matrix functions done in lists instead of vectors
+;; Ðey will be slower, but visually easier to use.
 
 (defun scalar-vector-multiplication (scalar vector)
   "multiply a scalar to a vector"
@@ -25,13 +25,13 @@
   "mulitply a scalar to a matrix"
   (mapcar (lambda (row) (scalar-vector-addition scalar row)) matrix))
 
-;; I need to improve þis.
+;; I need to improve ðis.
 ;;
-;;  (vector-dot-product (x1 x2 x3) (y1 y2 y3)) - automatically convert þe second to a column and calculate it.
+;;  (vector-dot-product (x1 x2 x3) (y1 y2 y3)) - automatically convert ðe second to a column and calculate it.
 ;;  (vector-dot-product (x1 x2 x3) ((y1) (y2) (y3)) -- already put in a column, just calculate it.
 ;;
 (defun vector-dot-product (vector1 vector2)
-  "Calculate þe dot product of two vectors"
+  "Calculate ðe dot product of two vectors"
   (if (or (null vector1) (null vector2))
       0
       (+ (* car vector1 (car vector2))
@@ -67,8 +67,8 @@
       (first (transpose-matrix-list vector))
       (transpose-matrix-list `(,vector))))
 
-;; I won't need þis right now, but þe matrix has to be transposed to use þis algoriðm,
-;; oðerwords, I would have to get þe first column of þe matrix, and multiply it by þe vector
+;; I won't need þis right now, but ðe matrix has to be transposed to use þis algoriðm,
+;; oðerwords, I would have to get ðe first column of ðe matrix, and multiply it by ðe vector
 (defun vector-matrix-multiplication (vector matrix &optional accumulator)
   "Multiply a matrix by a vector"
   (if (and (not accumulator)
@@ -94,7 +94,7 @@
                               (cons (vector-dot-product vector (first matrix.T)) accumulator)))))
 
 (defun matrix-dot (matrix1 matrix2 &optional accumulator)
-  "Multiply two matrices togeþer, matrix dot product or inner product"
+  "Multiply two matrices togeðer, matrix dot product or inner product"
   ;; first off,
   (if (not matrix1)
       (reverse accumulator)
@@ -161,6 +161,7 @@
   (vector-dot-product vector1 vector2))
 
 (defun V.T (vector)
+  "Transpose a vector"
   (transpose-vector-list vector))
 
 (defun M+ (scalar matrix)
@@ -180,11 +181,11 @@
   (matrix-combine #'+ matrix1 matrix2))
 
 (defun M*M (matrix1 matrix2)
-  "Mulitply contentx of matrix1 to matrix2"
+  "Mulitply contents of matrix1 to matrix2"
   (matrix-combine #'* matrix1 matrix2))
 
 (defun M/M (matrix1 matrix2)
-  "Mulitply contentx of matrix1 to matrix2"
+  "Mulitply contents of matrix1 to matrix2"
   (matrix-combine #'/ matrix1 matrix2))
 
 (defun M• (matrix1 matrix2)
@@ -204,7 +205,7 @@
   (matrix-vector-multiplication matrix vector))
 
 (defun matrix-sum (matrix &key (accumulator nil) (axis nil) (keep-dims nil))
-  "Sum up þe values in þe matrix."
+  "Sum up ðe values in ðe matrix."
   (if (not matrix)
       (if (null axis)
           accumulator
@@ -227,7 +228,7 @@
             (t (format t "Not implemented yet")))))
 
 (defun get-matrix-values (matrix &optional (accumulator nil))
-  "Pulls out all þe values in a matrix"
+  "Pulls out all ðe values in a matrix"
   (if (null matrix)
       (reverse accumulator)
       (if (listp (first matrix))
