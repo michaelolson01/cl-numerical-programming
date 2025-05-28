@@ -1,6 +1,7 @@
 ;;;; Python to lisp conversion of
 ;;;; [[https://www.freecodecamp.org/news/building-a-neural-network-from-scratch/][FreeCodeCamp]]
 
+;;; TODO: I split up weights an biases, but they can be put back together using plists
 ;;; Initialize weights and biases
 (defun init-params (layer-dims)
   (let ((weights nil)
